@@ -24,16 +24,19 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    // create collection
     const assignmentCollection = client
       .db("assignmentDB")
       .collection("AllAssignments");
 
+    // get all data from AllAssignment Collection
     app.get("/api/v1/all-assignments", async (req, res) => {
       const cursor = assignmentCollection.find();
       result = await cursor.toArray();
       res.send(result);
     });
 
+    // get single data from AllAssignment Collection
     app.get("/api/v1/all-assignments/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -41,9 +44,35 @@ async function run() {
       res.send(assignment);
     });
 
+    // insert single data to AllAssignment Collection
     app.post("/api/v1/all-assignments", async (req, res) => {
       const assignment = req.body;
       const result = await assignmentCollection.insertOne(assignment);
+      res.send(result);
+    });
+
+    // updated single data to AllAssignment Collection
+    app.put("/api/v1/all-assignments/:id", async (req, res) => {
+      const id = req.params.id;
+      const assignment = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedAssignment = {
+        $set: {
+          title: assignment.title,
+          image: assignment.image,
+          marks: assignment.marks,
+          dueDate: assignment.dueDate,
+          difficulty: assignment.difficulty,
+          email: assignment.email,
+          description: assignment.description,
+        },
+      };
+      const result = await assignmentCollection.updateOne(
+        filter,
+        updatedAssignment,
+        options
+      );
       res.send(result);
     });
 
