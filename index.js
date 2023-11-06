@@ -28,11 +28,11 @@ async function run() {
       .db("assignmentDB")
       .collection("AllAssignments");
 
-    // app.get("/api/v1/all-assignments", async (req, res) => {
-    //   const cursor = assignmentCollection.find();
-    //   result = await cursor.toArray();
-    //   res.send(result);
-    // });
+    app.get("/api/v1/all-assignments", async (req, res) => {
+      const cursor = assignmentCollection.find();
+      result = await cursor.toArray();
+      res.send(result);
+    });
 
     app.post("/api/v1/all-assignments", async(req, res)=>{
         const assignment = req.body
