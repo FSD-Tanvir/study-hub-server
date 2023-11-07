@@ -55,10 +55,10 @@ async function run() {
     app.put("/api/v1/all-assignments/:id", async (req, res) => {
       const id = req.params.id;
       const assignment = req.body;
-      const currentUserEmail = assignment.email;
       const filter = { _id: new ObjectId(id) };
       const previousAssignment = await assignmentCollection.findOne(filter);
       const assignmentCreatorEmail = previousAssignment.email;
+      const currentUserEmail = assignment.email;
       const options = { upsert: true };
       const updatedAssignment = {
         $set: {
@@ -77,6 +77,23 @@ async function run() {
           updatedAssignment,
           options
         );
+        res.send(result);
+      } else {
+        res.status(403).send({ error: "Forbidden" });
+      }
+    });
+
+    //updated single data to AllAssignment Collection
+    app.delete("/api/v1/all-assignments/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const query = { _id: new ObjectId(id) };
+      const assignment = await assignmentCollection.findOne(query);
+      const assignmentCreatorEmail = assignment.email;
+      const currentUserEmail = req.body.userEmail;
+
+      if (currentUserEmail === assignmentCreatorEmail) {
+        const result = await assignmentCollection.deleteOne(query);
         res.send(result);
       } else {
         res.status(403).send({ error: "Forbidden" });
