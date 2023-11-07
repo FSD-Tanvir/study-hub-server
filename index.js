@@ -29,6 +29,10 @@ async function run() {
       .db("assignmentDB")
       .collection("AllAssignments");
 
+    const submittedCollection = client
+      .db("assignmentDB")
+      .collection("SubmittedAssignments");
+
     // get all data from AllAssignment Collection
     app.get("/api/v1/all-assignments", async (req, res) => {
       const cursor = assignmentCollection.find();
@@ -98,6 +102,20 @@ async function run() {
       } else {
         res.status(403).send({ error: "Forbidden" });
       }
+    });
+
+    // get all data from SubmittedCollection Collection
+    app.get("/api/v1/submitted-assignments", async (req, res) => {
+      const cursor = submittedCollection.find();
+      result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //insert single data to SubmittedCollection Collection
+    app.post("/api/v1/submitted-assignments", async (req, res) => {
+      const submittedAssignment = req.body;
+      const result = await submittedCollection.insertOne(submittedAssignment);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
