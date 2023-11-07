@@ -55,7 +55,10 @@ async function run() {
     app.put("/api/v1/all-assignments/:id", async (req, res) => {
       const id = req.params.id;
       const assignment = req.body;
+      const currentUserEmail = assignment.email;
       const filter = { _id: new ObjectId(id) };
+      const previousAssignment = await assignmentCollection.findOne(filter);
+      const assignmentCreatorEmail = previousAssignment.email;
       const options = { upsert: true };
       const updatedAssignment = {
         $set: {
@@ -64,16 +67,20 @@ async function run() {
           marks: assignment.marks,
           dueDate: assignment.dueDate,
           difficulty: assignment.difficulty,
-          email: assignment.email,
           description: assignment.description,
         },
       };
-      const result = await assignmentCollection.updateOne(
-        filter,
-        updatedAssignment,
-        options
-      );
-      res.send(result);
+
+      if (currentUserEmail === assignmentCreatorEmail) {
+        const result = await assignmentCollection.updateOne(
+          filter,
+          updatedAssignment,
+          options
+        );
+        res.send(result);
+      } else {
+        res.status(403).send({ error: "Forbidden" });
+      }
     });
 
     // Send a ping to confirm a successful connection
