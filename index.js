@@ -131,6 +131,14 @@ async function run() {
       res.send(myAssignments);
     });
 
+    //get assignment creator's pending data from SubmittedCollection
+    app.get("/api/v1/submitted-assignments/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const assignment = await submittedCollection.findOne(query);
+      res.send(assignment);
+    });
+
     //insert single data to SubmittedCollection
     app.post("/api/v1/submitted-assignments", async (req, res) => {
       const submittedAssignment = req.body;
