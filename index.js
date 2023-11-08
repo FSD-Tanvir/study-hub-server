@@ -55,7 +55,7 @@ async function run() {
       res.send(result);
     });
 
-    // updated single data to AllAssignment Collection
+    // update single data to AllAssignment Collection
     app.put("/api/v1/all-assignments/:id", async (req, res) => {
       const id = req.params.id;
       const assignment = req.body;
@@ -87,7 +87,7 @@ async function run() {
       }
     });
 
-    //updated single data to AllAssignment Collection
+    //delete single data to AllAssignment Collection
     app.delete("/api/v1/all-assignments/:id", async (req, res) => {
       const id = req.params.id;
 
@@ -135,6 +135,27 @@ async function run() {
     app.post("/api/v1/submitted-assignments", async (req, res) => {
       const submittedAssignment = req.body;
       const result = await submittedCollection.insertOne(submittedAssignment);
+      res.send(result);
+    });
+
+    // update single data to SubmittedCollection
+    app.put("/api/v1/submitted-assignments/:id", async (req, res) => {
+      const id = req.params.id;
+      const markedValues = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateAssignment = {
+        $set: {
+          status: markedValues.status,
+          marks: markedValues.marks,
+          feedback: markedValues.feedback,
+        },
+      };
+      const result = await submittedCollection.updateOne(
+        filter,
+        updateAssignment,
+        options
+      );
       res.send(result);
     });
 
