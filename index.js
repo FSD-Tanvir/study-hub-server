@@ -104,23 +104,34 @@ async function run() {
       }
     });
 
-    // get all data from SubmittedCollection 
-    app.get("/api/v1/submitted-assignments", async (req, res) => {
+    // get all data from SubmittedCollection
+    app.get("/api/v1/all-submitted-assignments", async (req, res) => {
       const cursor = submittedCollection.find();
       result = await cursor.toArray();
       res.send(result);
     });
 
-    //get specific user's data from SubmittedCollection
-    app.get("/api/v1/my-assignments/", async(req,res)=>{
-     const userEmail = req.query.userEmail
-     const query = { examineeEmail: userEmail}
-     const cursor = submittedCollection.find(query);
-     const myAssignments = await cursor.toArray();
-     res.send(myAssignments);
-    })
+    //get specific user's all data from SubmittedCollection
+    app.get("/api/v1/my-assignments/", async (req, res) => {
+      const userEmail = req.query.userEmail;
+      const query = { examineeEmail: userEmail };
+      const cursor = submittedCollection.find(query);
+      const myAssignments = await cursor.toArray();
+      res.send(myAssignments);
+    });
 
-    //insert single data to SubmittedCollection 
+    //get assignment creator's pending data from SubmittedCollection
+    app.get("/api/v1/submitted-assignments/", async (req, res) => {
+      const userEmail = req.query.userEmail;
+      const query = {
+        $and: [{ status: "pending" }, { "assignment.email": userEmail }],
+      };
+      const cursor = submittedCollection.find(query);
+      const myAssignments = await cursor.toArray();
+      res.send(myAssignments);
+    });
+
+    //insert single data to SubmittedCollection
     app.post("/api/v1/submitted-assignments", async (req, res) => {
       const submittedAssignment = req.body;
       const result = await submittedCollection.insertOne(submittedAssignment);
