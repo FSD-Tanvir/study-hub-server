@@ -22,7 +22,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     // create collection
     const assignmentCollection = client
@@ -131,7 +131,7 @@ async function run() {
       res.send(myAssignments);
     });
 
-    //get assignment creator's pending data from SubmittedCollection
+    //get a single data from SubmittedCollection
     app.get("/api/v1/submitted-assignments/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
